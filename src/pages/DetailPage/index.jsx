@@ -9,6 +9,7 @@ import { Balance } from "../../assets/Balance";
 import { Vector } from "../../assets/Vector";
 import Type from '../../components/Type';
 import BaseStat from '../../components/BaseStat';
+import DamageRelations from '../../components/DamageRelations';
 
 const DetailPage = () => {
   const [pokemon, setPokemon] = useState();
@@ -80,6 +81,8 @@ const DetailPage = () => {
       .filter((_, index) => index <= 1)
       .map((obj) => obj.ability.name.replaceAll("-", " "));
   };
+
+  // console.log(pokemon?.DamageRelations);
 
   const formatPokemonStats = ([ // stats 배열을 구조분해할당
     statHP,
@@ -235,6 +238,9 @@ const DetailPage = () => {
         <div className="w-10/12">
           <h2 className={`text-base text-center font-semibold ${text}`}>데미지 관계</h2>
           {/* {pokemon.DamageRelations} */}
+          <DamageRelations 
+            damages={pokemon.DamageRelations}
+          />
         </div>
       )}
       {/* {isModalOpen && (
