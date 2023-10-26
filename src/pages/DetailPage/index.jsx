@@ -212,7 +212,7 @@ const DetailPage = () => {
 
           <h2 className={`text-base font-semibold ${text}`}>기본 능력치</h2>
           <div className="w-full">
-            <table>
+            <table className='m-auto'>
               <tbody>
                 {pokemon.stats.map((stat) => (
                   <BaseStat
