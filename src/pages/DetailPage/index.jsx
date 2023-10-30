@@ -23,8 +23,9 @@ const DetailPage = () => {
   const baseUrl = `https://pokeapi.co/api/v2/pokemon/`;
 
   useEffect(() => {
+    setIsLoading(true);
     fetchPokemonData();
-  }, [params]);
+  }, [pokemonId]);
 
   const fetchPokemonData = async () => {
     const url = `${baseUrl}${pokemonId}`;
@@ -32,9 +33,10 @@ const DetailPage = () => {
       const {data: pokemonData} = await axios.get(url);
       if(pokemonData) {
         // console.log(pokemonData)
-        const { name, id, types, weight, height, stats, abilities } =
+        const { name, id, types, weight, height, stats, abilities, sprites } =
           pokemonData;
         const nextAndPreviousPokemon = await getNextAndPreviousPokemon(id);
+        // console.log("sprites", sprites)
 
         const DamageRelations = await Promise.all( // 비동기 작업 처리하고 한꺼번에 리턴
           types.map(async (i) => {
@@ -53,7 +55,9 @@ const DetailPage = () => {
           abilities: formatAbilities(abilities),
           stats: formatPokemonStats(stats),
           DamageRelations,
-          types: types.map(type => type.type.name)
+          types: types.map(type => type.type.name),
+          sprites: formatPokemonSprites(sprites),
+          description: await getPokemonDescription(id)
         };
 
         setPokemon(formattedPokemonData);
@@ -102,6 +106,38 @@ const DetailPage = () => {
     { name: "Special Defense", baseStat: statSDEP.base_stat },
     { name: "Speed", baseStat: statSPD.base_stat },
   ];
+
+  const formatPokemonSprites = (sprites) => {
+    const newSprites = {...sprites};
+    // console.log(Object.keys(newSprites))
+
+    // string이 아닌 값을 가졌다면 삭제하기(url 있는것만 남기기위해)
+    (Object.keys(newSprites).forEach(key => {
+      if(typeof newSprites[key] !== 'string') {
+        delete newSprites[key]
+      }
+    }));  
+    // console.log(newSprites);
+
+    return Object.values(newSprites); // url만 return
+  }
+
+  const filterAndFormatDescription = (flavorText) => {
+    const koreanDescriptions = flavorText
+      ?.filter((text) => text.language.name === "ko")
+      .map((text) => text.flavor_text.replace(/\r|\n|\f/g, ' '));
+    return koreanDescriptions;
+  }
+
+  const getPokemonDescription = async (id) => {
+    const url = `https://pokeapi.co/api/v2/pokemon-species/${id}/`;
+    const {data: pokemonSpecies} = await axios.get(url);
+    // console.log(pokemonSpecies)
+
+    // 한국어 description필터링
+    const descriptions = filterAndFormatDescription(pokemonSpecies.flavor_text_entries);
+    return descriptions[Math.floor(Math.random() * descriptions.length)];
+  }
 
 
   if(isLoading) {
@@ -212,7 +248,7 @@ const DetailPage = () => {
 
           <h2 className={`text-base font-semibold ${text}`}>기본 능력치</h2>
           <div className="w-full">
-            <table className='m-auto'>
+            <table className="m-auto">
               <tbody>
                 {pokemon.stats.map((stat) => (
                   <BaseStat
@@ -232,14 +268,17 @@ const DetailPage = () => {
           </p>
 
           <div className="flex my-8 flex-wrap justify-center">
-            {/* {pokemon.sprites.map((url, index) => (
-              <img key={index} src={url} alt="sprite" />
-            ))} */}
+            {pokemon.sprites.map((url, index) => (
+              <img key={index} src={url} alt="sprites" />
+            ))}
           </div>
         </section>
       </div>
       {isModalOpen && (
-        <DamageModal setIsModalOpen={setIsModalOpen} damages={pokemon.DamageRelations} />
+        <DamageModal
+          setIsModalOpen={setIsModalOpen}
+          damages={pokemon.DamageRelations}
+        />
       )}
     </article>
   );
