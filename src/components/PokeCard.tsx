@@ -2,9 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import LazyImage from "./LazyImage";
 import { Link } from "react-router-dom";
+import { PokemonNameAndUrl } from "../types/PokemonData";
+import { PokemonDetail } from "../types/PokemonDetail";
 
-const PokeCard = ({ url, name }) => {
-  const [pokemon, setPokemon] = useState();
+interface PokeData {
+  id: number;
+  type: string;
+  name: string;
+}
+
+const PokeCard = ({ url, name }: PokemonNameAndUrl) => {
+  const [pokemon, setPokemon] = useState<PokeData>();
 
   useEffect(() => {
     fetchPokeDetailData();
@@ -21,12 +29,13 @@ const PokeCard = ({ url, name }) => {
     }
   };
 
-  const formatPokeData = (params) => {
+  const formatPokeData = (params: PokemonDetail) => {
+    // console.log(JSON.stringify(params)) // quicktype이용해서 타입인터페이스생성
     const { id, types, name } = params;
-    const PokeData = {
+    const PokeData: PokeData = {
       id,
-      name,
       type: types[0].type.name,
+      name,
     };
     return PokeData;
   };

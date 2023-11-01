@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PokeCard from "../../components/PokeCard";
 import AutoComplete from "../../components/AutoComplete";
+import { PokemonData, PokemonNameAndUrl } from "../../types/PokemonData";
 
 const MainPage = () => {
   // 모든 포켓몬 데이터를 가지고 있는 State
-  const [allPokemons, setAllPokemons] = useState([]);
+  const [allPokemons, setAllPokemons] = useState<PokemonNameAndUrl[]>([]);
   // 실제로 리스트로 보여주는 포켓몬 데이터를 가지고 있는 State
-  const [displayedPokemons, setDisplayedPokemons] = useState([]);
+  const [displayedPokemons, setDisplayedPokemons] = useState<PokemonNameAndUrl[]>([]);
   // 한번에 보여주는 포켓몬 수
   const limitNum = 20;
   const url = `https://pokeapi.co/api/v2/pokemon/?limit=1008&offset=0`;
@@ -17,8 +18,8 @@ const MainPage = () => {
   }, []);
 
   const filterDisplayedPokemonData = (
-    allPokemonsData,
-    displayedPokemons = []
+    allPokemonsData: PokemonNameAndUrl[],
+    displayedPokemons: PokemonNameAndUrl[] = []
   ) => {
     const limit = displayedPokemons.length + limitNum;
     // 모든 포켓몬 데이터에서 limitNum만큼 더 가져오기
@@ -28,7 +29,7 @@ const MainPage = () => {
 
   const fetchPokeData = async () => {
     try {
-      const response = await axios.get(url);
+      const response = await axios.get<PokemonData>(url);
       setAllPokemons(response.data.results);
       setDisplayedPokemons(filterDisplayedPokemonData(response.data.results));
     } catch (error) {
@@ -47,7 +48,7 @@ const MainPage = () => {
       <section className="pt-6 flex flex-col justify-content items-center overflow-auto z-0">
         <div className="flex flex-row flex-wrap gap-[16px] items-center justify-center px-2 max-w-4xl ">
           {displayedPokemons.length > 0 ? (
-            displayedPokemons.map(({ url, name }, index) => (
+            displayedPokemons.map(({ url, name }: PokemonNameAndUrl, index) => (
               <PokeCard key={index} url={url} name={name} />
             ))
           ) : (

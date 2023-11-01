@@ -1,22 +1,26 @@
 import React, { useState } from 'react'
 import { useDebounce } from '../hooks/useDebounce';
+import { PokemonNameAndUrl } from '../types/PokemonData';
 
-const AutoComplete = ({ allPokemons, setDisplayedPokemons }) => {
+interface AutoCompleteProps {
+  allPokemons: PokemonNameAndUrl[];
+  setDisplayedPokemons: React.Dispatch<React.SetStateAction<PokemonNameAndUrl[]>>;
+}
+const AutoComplete = ({ allPokemons, setDisplayedPokemons }: AutoCompleteProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const filterNames = (input) => {
+  const filterNames = (input: string) => {
     const value = input.toLowerCase();
     return value ? allPokemons.filter((e) => e?.name.includes(value)) : [];
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let text = searchTerm.trim();
     setDisplayedPokemons(filterNames(text));
     setSearchTerm("");
   };
 
-  const checkEqualName = (input) => {
+  const checkEqualName = (input: string) => {
     const filteredArray = filterNames(input);
     // 검색어 일치하는게 있으면 없애기
     return filteredArray[0]?.name === input ? [] : filteredArray; // 배열첫번째거에 이름이 있으면 빈배열
