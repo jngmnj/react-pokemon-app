@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
-import MainPage from './pages/MainPage';
-import DetailPage from './pages/DetailPage';
-import LoginPage from './pages/LoginPage';
-import NavBar from './components/NavBar';
+import MainPage from './pages/MainPage/index.tsx';
+import DetailPage from './pages/DetailPage/index.tsx';
+import LoginPage from './pages/LoginPage/index.tsx';
+import NavBar from './components/NavBar.jsx';
+import { v4 } from 'uuid';
 
 const Layout = () => {
+  console.log( v4())
   return (
     <>
       <NavBar />

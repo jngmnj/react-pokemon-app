@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
+import { User, getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
 import app from "../firebase";
 
-const initialUserData = localStorage.getItem("userData") ? 
-  JSON.parse(localStorage.getItem("userData")) : {};
+const userDataFromStorage = localStorage.getItem("userData");
+
+// const initialUserData = localStorage.getItem("userData") ? 
+//   JSON.parse(localStorage.getItem("userData")) : {};
+const initialUserData = userDataFromStorage ? userDataFromStorage : null;
 
 const NavBar = () => {
   const [show, setShow] = useState(false);
@@ -13,7 +16,7 @@ const NavBar = () => {
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(initialUserData);
+  const [userData, setUserData] = useState<User | null>(initialUserData);
 
   const listner = () => {
     if(window.scrollY > 50) {
@@ -54,6 +57,7 @@ const NavBar = () => {
     signInWithPopup(auth, provider)
       .then(result => {
         setUserData(result.user)
+        // console.log("result.user",JSON.stringify(result.user))
         localStorage.setItem("userData", JSON.stringify(result.user))
       })
       .catch(error => {
@@ -65,7 +69,7 @@ const NavBar = () => {
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
-        setUserData({});
+        setUserData(null);
       })
       .catch(error => {
         alert(error.massage);
@@ -85,10 +89,12 @@ const NavBar = () => {
         <Login onClick={handleAuth}>로그인</Login>
       ) : (
         <SignOut>
-          <UserImg 
-            src={userData.photoURL} 
-            alt="" 
-          />
+          {userData?.photoURL && (
+            <UserImg 
+              src={userData.photoURL} 
+              alt="" 
+            />
+          )}
           <DropDown onClick={handleSignOut}>로그아웃</DropDown>
         </SignOut>
       )}
@@ -96,7 +102,7 @@ const NavBar = () => {
   );
 }
 
-const NavWrapper = styled.nav`
+const NavWrapper = styled.nav<{show: boolean}>`
   position: fixed;
   top: 0;
   left:0;

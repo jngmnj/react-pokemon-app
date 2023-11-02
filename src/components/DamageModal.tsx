@@ -1,10 +1,15 @@
 import React, { useRef } from 'react'
 import DamageRelations from './DamageRelations'
 import useOnclickOutside from '../hooks/useOnClickOutside'
+import { DamageRelations as DamageRelationsProps } from '../types/DamageRelationsOfPokemonTypes';
 
-const DamageModal = ({ setIsModalOpen, damages }) => {
+interface DamageModalProps {
+  damages: DamageRelationsProps[];
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const DamageModal = ({ setIsModalOpen, damages }: DamageModalProps) => {
 
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>(null);
 	useOnclickOutside(ref, () => setIsModalOpen(false));
 
   return (

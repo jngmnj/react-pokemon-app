@@ -49,7 +49,7 @@ const DetailPage = () => {
         const DamageRelations = await Promise.all( // 비동기 작업 처리하고 한꺼번에 리턴
           types.map(async (i) => {
             const type = await axios.get<DamageRelationsOfPokemonTypes>(i.type.url);
-            // console.log(JSON.stringify(type.data))
+            // console.log("DamageRelationsOfPokemonTypes",JSON.stringify(type.data))
             return type.data.damage_relations
           })
         );
@@ -68,7 +68,7 @@ const DetailPage = () => {
           sprites: formatPokemonSprites(sprites),
           description: await getPokemonDescription(id),
         };
-        // console.log(JSON.stringify(formattedPokemonData));
+        // console.log("formattedPokemonData",JSON.stringify(formattedPokemonData));
         setPokemon(formattedPokemonData);
         setIsLoading(false);
       }
@@ -144,7 +144,7 @@ const DetailPage = () => {
   const getPokemonDescription = async (id: number): Promise<string> => {
     const url = `https://pokeapi.co/api/v2/pokemon-species/${id}/`;
     const {data: pokemonSpecies} = await axios.get<PokemonDescription>(url);
-    // console.log(JSON.stringify(pokemonSpecies));
+    // console.log("pokemonSpecies", JSON.stringify(pokemonSpecies));
     // console.log(pokemonSpecies)
 
     // 한국어 description필터링
