@@ -3,12 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { User, getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
 import app from "../firebase";
+import storage from "../utils/storage";
 
-const userDataFromStorage = localStorage.getItem("userData");
+// const userDataFromStorage = localStorage.getItem("userData");
 
 // const initialUserData = localStorage.getItem("userData") ? 
 //   JSON.parse(localStorage.getItem("userData")) : {};
-const initialUserData = userDataFromStorage ? userDataFromStorage : null;
+// const initialUserData = userDataFromStorage ? userDataFromStorage : null;
+const initialUserData = storage.get<User>("userData");
 
 const NavBar = () => {
   const [show, setShow] = useState(false);
@@ -57,8 +59,9 @@ const NavBar = () => {
     signInWithPopup(auth, provider)
       .then(result => {
         setUserData(result.user)
-        // console.log("result.user",JSON.stringify(result.user))
-        localStorage.setItem("userData", JSON.stringify(result.user))
+        // console.log("result.user",JSON.stringify(result.user));
+        // localStorage.setItem("userData", JSON.stringify(result.user));
+        storage.set("userData", result.user);
       })
       .catch(error => {
         console.error(error);
@@ -69,6 +72,8 @@ const NavBar = () => {
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
+        // localStorage.removeItem("userData");
+        storage.remove("userData");
         setUserData(null);
       })
       .catch(error => {
